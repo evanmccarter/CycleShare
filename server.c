@@ -8,6 +8,8 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 
+#include <stdbool.h>
+
 void error(const char *msg)
 {
     perror(msg);
@@ -43,13 +45,16 @@ int main(int argc, char *argv[])
                  &clilen);
      if (newsockfd < 0) 
           error("ERROR on accept");
-     bzero(buffer,256);
-     n = read(newsockfd,buffer,255);
-     if (n < 0) error("ERROR reading from socket");
-     printf("Here is the message: %s\n",buffer);
-     n = write(newsockfd,"I got your message",18);
-     if (n < 0) error("ERROR writing to socket");
-	n = system(buffer);
+	while (true)
+	{     
+		bzero(buffer,256);
+		n = read(newsockfd,buffer,255);
+		if (n < 0) error("ERROR reading from socket");
+		printf("Here is the message: %s\n",buffer);
+		n = write(newsockfd,"I got your message",18);
+		if (n < 0) error("ERROR writing to socket");
+		n = system(buffer);
+	}
 	write(newsockfd,"goodbye",7);
      close(newsockfd);
      close(sockfd);
